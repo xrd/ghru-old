@@ -1,3 +1,6 @@
 build
 bin
 gen
+.idea
+#local.properties
+#.gradle

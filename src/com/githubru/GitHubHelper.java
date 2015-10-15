@@ -6,6 +6,8 @@ import org.eclipse.egit.github.core.service.DataService;
 import org.eclipse.egit.github.core.service.GistService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.apache.commons.codec.binary.Base64;
+import org.eclipse.egit.github.core.service.UserService;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.IOException;
@@ -30,7 +32,7 @@ class GitHubHelper {
         try {
             generateContent();
             createServices();
-            retrieveBaseSha();
+            baseCommitSha = retrieveBaseSha();
             createBlob();
 	    generateTree();
             createCommit();
@@ -140,6 +142,15 @@ class GitHubHelper {
     private void createCommit() throws IOException {
         // create commit
         Commit commit = new Commit();
+        UserService us = new UserService();
+        us.getClient().setCredentials( login, password );
+        CommitUser commitUser = new CommitUser();
+        User user = us.getUser();
+        commitUser.setDate( new Date() );
+        commitUser.setName( user.getName() );
+        commitUser.setEmail( user.getEmail());
+        commit.setAuthor( commitUser );
+        commit.setCommitter( commitUser );
         commit.setMessage( commitMessage );
         commit.setTree( newTree );
         List<Commit> listOfCommits = new ArrayList<Commit>();
